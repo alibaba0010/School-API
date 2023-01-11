@@ -5,6 +5,7 @@ import {
   getStudentById,
   checkEmailExists,
   addStudents,
+  deleteStudentByID,
 } from "../services/Query.js";
 
 export const getAllStudents = async (req, res) => {
@@ -26,10 +27,26 @@ export const createNewStudent = async (req, res) => {
   const { name, email, age, dob } = req.body;
   // check if email exists
   const checkEmail = await pool.query(checkEmailExists, [email]);
-  console.log(checkEmail.rows.length);
-  if (checkEmail.rows.length) res.json({ error: "Email Already exits" });
-  const student = await pool.query(addStudents, [name, email, age, dob]);
-  return res
-    .status(StatusCodes.CREATED)
-    .json({ msg: "Student Created Successfully" });
+  if (checkEmail.rows.length) {
+    return res.json({ error: "Email Already exits" });
+  } else {
+    await pool.query(addStudents, [name, email, age, dob]);
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ msg: "Student Created Successfully" });
+  }
+};
+
+export const deleteStudent = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const checkStudent = await pool.query(getStudentById, [id]);
+  console.log("check Student: ", checkStudent);
+  if (!checkStudent) {
+    return res.json({ error: "Student doesn't exist" });
+  } else {
+    await pool.query(deleteStudentByID, [id]);
+    return res
+      .status(StatusCodes.OK)
+      .json({ msg: "Student successfully deleted" });
+  }
 };

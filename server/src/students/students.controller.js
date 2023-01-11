@@ -6,6 +6,7 @@ import {
   checkEmailExists,
   addStudents,
   deleteStudentByID,
+  updateStudentById,
 } from "../services/Query.js";
 
 export const getAllStudents = async (req, res) => {
@@ -40,11 +41,28 @@ export const createNewStudent = async (req, res) => {
 export const deleteStudent = async (req, res) => {
   const id = parseInt(req.params.id);
   const checkStudent = await pool.query(getStudentById, [id]);
-  console.log("check Student: ", checkStudent);
-  if (!checkStudent) {
+  console.log("Check rows:", checkStudent.rows);
+  // if ((checkStudent.rows = [])) {
+  if ((checkStudent.rows.length = 0)) {
     return res.json({ error: "Student doesn't exist" });
   } else {
     await pool.query(deleteStudentByID, [id]);
+    return res
+      .status(StatusCodes.OK)
+      .json({ msg: "Student successfully deleted" });
+  }
+};
+export const updateStudent = async (req, res) => {
+  const body = req.body;
+  const id = parseInt(req.params.id);
+  const checkStudent = await pool.query(getStudentById, [id]);
+  if ((checkStudent.rows.length = 0)) {
+    return res.json({ error: "Student doesn't exist" });
+  } else {
+    const updateStudent = await pool.query(updateStudentById, [body, id]);
+    if (!updateStudent) {
+      return res.json({ error: `Unable to update student${id}` });
+    }
     return res
       .status(StatusCodes.OK)
       .json({ msg: "Student successfully deleted" });

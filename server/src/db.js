@@ -1,7 +1,6 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 
-// const Pool = pg.Pool;
 export const pool = new Pool({
    user: "postgres",
    host: "localhost",
@@ -9,4 +8,3 @@ export const pool = new Pool({
    password: "Akinkunmi100$",
    port: 5432
 })
-
